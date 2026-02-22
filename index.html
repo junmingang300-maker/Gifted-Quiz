@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TOP TIER - 입시 대비 시스템</title>
+    <style>
+        /* [기본 스타일] */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Malgun Gothic', sans-serif; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; width: 100vw; color: #fff; overflow-x: hidden;
+        }
+        .container {
+            width: 90%; max-width: 420px; background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px); padding: 35px 25px; border-radius: 30px;
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        h1 { 
+            font-size: 28px; margin-bottom: 10px; font-weight: 800; 
+            background: linear-gradient(to right, #4facfe, #00f2fe); 
+            background-clip: text; -webkit-background-clip: text;
+            color: transparent; -webkit-text-fill-color: transparent;
+            display: inline-block; width: 100%;
+        }
+        .subtitle { color: #8892b0; font-size: 13px; margin-bottom: 30px; letter-spacing: 1px; }
+
+        input { 
+            width: 100%; padding: 15px; margin: 8px 0; background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white; font-size: 16px; outline: none;
+        }
+        button { width: 100%; padding: 16px; margin: 8px 0; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-main { background: #007bff; color: white; }
+        .btn-sub { background: rgba(255,255,255,0.1); color: #ccc; }
+        
+        /* [랭킹 전용 스타일] */
+        .rank-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
+        .rank-tabs button { padding: 10px; font-size: 12px; background: rgba(255,255,255,0.1); color: #fff; margin: 0; }
+        .rank-tabs button.active { background: #4facfe; color: #fff; }
+        .rank-list { text-align: left; max-height: 300px; overflow-y: auto; margin-top: 10px; }
+        .rank-item { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); align-items: center; }
+        .rank-item span:first-child { width: 30px; color: #4facfe; font-weight: bold; }
+
+        /* [도감 그리드 스타일] */
+        .dogam-grid {
+            display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px;
+            margin: 20px 0; max-height: 350px; overflow-y: auto;
+            padding: 10px; background: rgba(0,0,0,0.3); border-radius: 15px;
+        }
+        .q-block { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: bold; border-radius: 3px; }
+        .status-0 { background-color: #ffffff; color: #333; } /* 미풀이 */
+        .status-3 { background-color: #10b981; color: #fff; } /* 즉시정답 */
+        .status-2 { background-color: #3b82f6; color: #fff; } /* 복습정답 */
+        .status-1 { background-color: #ef4444; color: #fff; } /* 오답 */
+
+        .dogam-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; }
+        
+        #feedback-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 9999;
+        }
+        .feedback-card { width: 80%; padding: 30px; border-radius: 20px; text-align: center; }
+        .correct { background: #10b981; } .wrong { background: #ef4444; }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="container">
+        <h1>TOP TIER</h1>
+        <p class="subtitle">영재학교 · 과학고 입시 대비 시스템</p>
+        <button class="btn-main" onclick="renderAuth('login')">LOGIN</button>
+        <button class="btn-sub" onclick="renderAuth('signup')">SIGN UP</button>
+    </div>
+
+    <div id="feedback-overlay">
+        <div id="feedback-card" class="feedback-card">
+            <div id="feedback-icon" style="font-size:40px;">✨</div>
+            <div id="feedback-text" style="font-size:18px; font-weight:bold; margin:15px 0;">정답입니다!</div>
+            <button onclick="closeFeedback()" style="background:white; color:black; width:auto; padding:10px 30px;">NEXT</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCNlPVPqg9e631cSJw-ZRtVGrIt35kPxPA",
+            authDomain: "gifted-quiz.firebaseapp.com",
+            databaseURL: "https://gifted-quiz-default-rtdb.firebaseio.com", 
+            projectId: "gifted-quiz",
+            appId: "1:807944427128:web:e449f1919686e8ea6a7f8d",
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const appContainer = document.getElementById('app');
+
+        let allQuestions = {};
+        let currentUser = "";
+        let currentQuizList = [];
+        let currentIndex = 0;
+        let isReviewMode = false;
+
+        const mathSubs = ['정수', '해석', '기하', '조합'];
+        const scienceSubs = ['물리', '화학', '생물', '지구과학'];
+
+        async function loadData() {
+            const subjects = ['physics', 'chemistry', 'biology', 'earthScience', 'numberTheory', 'analysis', 'geometry', 'combinatorics'];
+            const names = ['물리', '화학', '생물', '지구과학', '정수', '해석', '기하', '조합'];
+            for(let i=0; i<subjects.length; i++) {
+                try {
+                    const module = await import(`./${subjects[i]}.js?v=${Date.now()}`);
+                    const data = Object.values(module).find(Array.isArray);
+                    if(data) allQuestions[names[i]] = data;
+                } catch(e) { console.warn(names[i] + " 로드 실패"); }
+            }
+        }
+        loadData();
+
+        window.renderAuth = (mode) => {
+            appContainer.innerHTML = `<h1>${mode.toUpperCase()}</h1><input type="text" id="uid" placeholder="ID"><input type="password" id="upw" placeholder="PW"><button class="btn-main" onclick="handleAuth('${mode}')">CONFIRM</button><button class="btn-sub" onclick="location.reload()">BACK</button>`;
+        };
+
+        window.handleAuth = async (mode) => {
+            const id = document.getElementById('uid').value.trim();
+            const pw = document.getElementById('upw').value.trim();
+            if(!id || !pw) return;
+            const userRef = ref(db, `users/${id}`);
+            const snapshot = await get(userRef);
+            if(mode === 'signup') {
+                if(snapshot.exists()) return alert("중복 ID");
+                await set(userRef, { password: pw, solved: {} });
+                alert("가입 완료"); renderAuth('login');
+            } else {
+                if(!snapshot.exists() || snapshot.val().password !== pw) return alert("정보 불일치");
+                currentUser = id; renderMainMenu();
+            }
+        };
+
+        window.renderMainMenu = () => {
+            appContainer.innerHTML = `<h1>DASHBOARD</h1><button class="btn-main" onclick="renderSubjectMenu()">플레이 하기</button><button class="btn-main" style="background:#f39c12" onclick="startReview()">오답 복습</button><button class="btn-main" style="background:#9b59b6" onclick="renderDogam()">나의 도감</button><button class="btn-main" style="background:#6c5ce7" onclick="renderRanking('all')">리더보드</button><button class="btn-sub" onclick="location.reload()">LOGOUT</button>`;
+        };
+
+        window.renderSubjectMenu = () => {
+            const subs = ['정수','해석','기하','조합','물리','화학','생물','지구과학'];
+            appContainer.innerHTML = `<h1>SUBJECTS</h1><div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">${subs.map(s=>`<button onclick="startQuiz('${s}')" style="background:#2d3436; margin:0;">${s}</button>`).join('')}</div><button class="btn-sub" onclick="renderMainMenu()">BACK</button>`;
+        };
+
+        window.startQuiz = (subject) => {
+            isReviewMode = false;
+            currentQuizList = [...(allQuestions[subject] || [])].sort(()=>Math.random()-0.5);
+            if(currentQuizList.length===0) return alert("데이터가 없습니다.");
+            currentIndex = 0; renderQuestion();
+        };
+
+        window.renderQuestion = () => {
+            const q = currentQuizList[currentIndex];
+            appContainer.innerHTML = `<p style="color:#4facfe; font-size:12px; margin-bottom:10px;">${q.category} PHASE ${currentIndex+1}</p><h3 style="margin-bottom:20px; line-height:1.4;">${q.question}</h3><div id="options">${q.options.map(opt=>`<button onclick="checkAnswer('${opt}')" style="background:rgba(255,255,255,0.1); margin:6px 0;">${opt}</button>`).join('')}</div>`;
+        };
+
+        window.checkAnswer = async (selected) => {
+            const q = currentQuizList[currentIndex];
+            const isCorrect = (selected === q.answer);
+            const userRef = ref(db, `users/${currentUser}/solved/${q.category}/${q.id}`);
+            
+            const prevSnapshot = await get(userRef);
+            const prevStatus = prevSnapshot.val() || 0;
+
+            let newStatus = prevStatus;
+            if(isCorrect) {
+                newStatus = (prevStatus === 1 || isReviewMode) ? 2 : 3;
+            } else {
+                if(prevStatus !== 3 && prevStatus !== 2) newStatus = 1;
+            }
+            await set(userRef, newStatus);
+
+            document.getElementById('feedback-card').className = 'feedback-card ' + (isCorrect?'correct':'wrong');
+            document.getElementById('feedback-text').innerText = isCorrect ? '정답입니다!' : '오답입니다. 정답: ' + q.answer;
+            document.getElementById('feedback-overlay').style.display = 'flex';
+        };
+
+        window.closeFeedback = () => {
+            document.getElementById('feedback-overlay').style.display = 'none';
+            currentIndex++;
+            if(currentIndex < currentQuizList.length) renderQuestion();
+            else renderMainMenu();
+        };
+
+        window.startReview = async () => {
+            isReviewMode = true;
+            const snapshot = await get(ref(db, `users/${currentUser}/solved`));
+            const solved = snapshot.val() || {};
+            let list = [];
+            for(let sub in allQuestions) {
+                allQuestions[sub].forEach(q => { if(solved[sub] && solved[sub][q.id] === 1) list.push(q); });
+            }
+            if(list.length===0) return alert("복습할 오답이 없습니다.");
+            currentQuizList = list.sort(()=>Math.random()-0.5);
+            currentIndex = 0; renderQuestion();
+        };
+
+        // [랭킹 로직]
+        window.renderRanking = async (type) => {
+            const snapshot = await get(ref(db, `users`));
+            const users = snapshot.val() || {};
+            let rankData = [];
+
+            for (let id in users) {
+                let score = 0;
+                const solved = users[id].solved || {};
+                for (let sub in solved) {
+                    if (type === 'math' && !mathSubs.includes(sub)) continue;
+                    if (type === 'science' && !scienceSubs.includes(sub)) continue;
+                    score += Object.values(solved[sub]).filter(v => v === 3 || v === 2).length;
+                }
+                rankData.push({ id, score });
+            }
+            rankData.sort((a, b) => b.score - a.score);
+
+            let html = `<h1>RANKING</h1>
+                <div class="rank-tabs">
+                    <button class="${type==='all'?'active':''}" onclick="renderRanking('all')">전체</button>
+                    <button class="${type==='math'?'active':''}" onclick="renderRanking('math')">수학</button>
+                    <button class="${type==='science'?'active':''}" onclick="renderRanking('science')">과학</button>
+                </div>
+                <div class="rank-list">`;
+            rankData.forEach((u, i) => {
+                html += `<div class="rank-item"><span>${i+1}</span><b>${u.id}</b><span>${u.score}개</span></div>`;
+            });
+            appContainer.innerHTML = html + `</div><button class="btn-sub" onclick="renderMainMenu()">BACK</button>`;
+        };
+
+        // [도감 로직]
+        window.renderDogam = async () => {
+            const snapshot = await get(ref(db, `users/${currentUser}/solved`));
+            const solvedData = snapshot.val() || {};
+            const subs = ['정수','해석','기하','조합','물리','화학','생물','지구과학'];
+            
+            let html = `<h1>COLLECTION</h1><div class="dogam-list">`;
+            subs.forEach(sub => {
+                const subData = solvedData[sub] || {};
+                const correctCount = Object.values(subData).filter(v => v >= 2).length;
+                html += `<div class="dogam-item" onclick="renderDogamDetail('${sub}')"><span>${sub}</span><span style="color:#4facfe">${correctCount} / 300 ></span></div>`;
+            });
+            appContainer.innerHTML = html + `</div><button class="btn-sub" onclick="renderMainMenu()">BACK</button>`;
+        };
+
+        window.renderDogamDetail = async (subject) => {
+            const snapshot = await get(ref(db, `users/${currentUser}/solved/${subject}`));
+            const subData = snapshot.val() || {};
+            let html = `<h2>${subject} STATUS</h2><div class="dogam-grid">`;
+            for(let i=1; i<=300; i++) {
+                const status = subData[i] || 0;
+                html += `<div class="q-block status-${status}">${i}</div>`;
+            }
+            html += `</div><div style="font-size:10px; display:flex; justify-content:space-around; opacity:0.8;"><span>⚪미풀이</span><span>🟢정답</span><span>🔵복습완료</span><span>🔴오답</span></div>`;
+            appContainer.innerHTML = html + `<button class="btn-sub" onclick="renderDogam()" style="margin-top:20px;">BACK</button>`;
+        };
+    </script>
+</body>
+</html>
