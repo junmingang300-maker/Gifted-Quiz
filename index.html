@@ -3,62 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TOP TIER - 통합 시스템</title>
+    <title>TOP TIER - FINAL SYSTEM</title>
     <style>
         :root { --bg: #0f172a; --card: rgba(30, 41, 59, 0.7); --primary: #38bdf8; --correct: #10b981; --wrong: #ef4444; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Pretendard', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; color: #f1f5f9; }
         .container { width: 92%; max-width: 440px; background: var(--card); backdrop-filter: blur(20px); padding: 40px 28px; border-radius: 32px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; }
-        
-        h1 { 
-            font-size: 34px; margin-bottom: 8px; font-weight: 800; 
-            background: linear-gradient(to right, #38bdf8, #818cf8);
-            background-clip: text; -webkit-background-clip: text; color: transparent; 
-        }
-        
+        h1 { font-size: 34px; margin-bottom: 8px; font-weight: 800; background: linear-gradient(to right, #38bdf8, #818cf8); background-clip: text; -webkit-background-clip: text; color: transparent; }
         .subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 35px; }
         input { width: 100%; padding: 18px; margin: 12px 0; background: rgba(15, 23, 42, 0.6); border: 2px solid rgba(255, 255, 255, 0.05); border-radius: 18px; color: #fff; font-size: 16px; }
         button { width: 100%; padding: 18px; margin: 10px 0; border: none; border-radius: 18px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .btn-main { background: #3b82f6; color: #fff; }
         .btn-sub { background: rgba(255, 255, 255, 0.05); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-admin { background: linear-gradient(to right, #10b981, #059669); color: #fff; box-shadow: 0 4px 15px rgba(16,185,129,0.3); }
+        .btn-danger { background: rgba(244, 63, 94, 0.15); color: #f43f5e; border: 1px solid rgba(244, 63, 94, 0.2); }
         .exit-link { position: absolute; top: 25px; right: 25px; color: #f43f5e; font-size: 13px; cursor: pointer; font-weight: 800; padding: 6px 12px; border-radius: 10px; background: rgba(244, 63, 94, 0.15); }
-        
-        .rank-tabs { display: flex; gap: 8px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 6px; border-radius: 14px; }
-        .rank-tabs button { padding: 12px; font-size: 13px; margin: 0; background: transparent; color: #94a3b8; flex: 1; }
-        .rank-tabs button.active { background: #334155; color: var(--primary); }
-        
-        .rank-list { text-align: left; max-height: 300px; overflow-y: auto; }
-        .rank-item { display: flex; justify-content: space-between; padding: 16px; background: rgba(255,255,255,0.03); border-radius: 15px; margin-bottom: 10px; }
-        
-        .dogam-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin: 20px 0; max-height: 360px; overflow-y: auto; padding: 15px; background: rgba(15, 23, 42, 0.5); border-radius: 24px; }
-        .q-block { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; border-radius: 8px; cursor: pointer; }
-        .status-0 { background: #334155; color: #64748b; cursor: default; } /* 미풀이 */
-        .status-1 { background: #ef4444; color: #fff; } /* 오답 */
-        .status-2 { background: #3b82f6; color: #fff; } /* 정답(복습필요) */
-        .status-3 { background: var(--correct); color: #fff; } /* 완전정답 */
-
-        #feedback-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(10px); }
-        .feedback-card { width: 90%; max-width: 400px; padding: 40px 30px; border-radius: 32px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
+        .admin-list { text-align: left; max-height: 350px; overflow-y: auto; }
+        .admin-item { padding: 15px; background: rgba(255,255,255,0.05); border-radius: 15px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
+        .dogam-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin: 20px 0; max-height: 360px; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 20px; }
+        .q-block { aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; border-radius: 6px; }
+        .status-0 { background: #334155; color: #64748b; }
+        .status-1 { background: #ef4444; color: #fff; }
+        .status-2 { background: #3b82f6; color: #fff; }
+        .status-3 { background: #10b981; color: #fff; }
+        #feedback-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.98); display: none; justify-content: center; align-items: center; z-index: 9999; }
+        .feedback-card { width: 85%; max-width: 380px; padding: 40px; border-radius: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
     <div id="app" class="container">
         <h1>TOP TIER</h1>
-        <p class="subtitle">시스템 동기화 중...</p>
+        <p class="subtitle">시스템 준비 중...</p>
     </div>
 
     <div id="feedback-overlay">
         <div id="feedback-card" class="feedback-card">
-            <div id="feedback-icon" style="font-size:55px; margin-bottom:20px;">✨</div>
-            <div id="feedback-text" style="font-size:18px; line-height:1.7; margin-bottom:30px; white-space: pre-wrap; font-weight:600; color:#fff;"></div>
-            <button id="next-btn" style="background:#fff; color:#0f172a; width:auto; padding:15px 50px; margin:0 auto;">확인</button>
+            <div id="feedback-icon" style="font-size:60px; margin-bottom:20px;"></div>
+            <div id="feedback-text" style="font-size:18px; line-height:1.6; margin-bottom:30px; white-space: pre-wrap; color:#fff;"></div>
+            <button id="next-btn" style="background:#fff; color:#0f172a; width:100%;">확인</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
-        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+        import { getDatabase, ref, get, set, remove } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCNlPVPqg9e631cSJw-ZRtVGrIt35kPxPA",
@@ -76,42 +65,32 @@
         let currentUser = "";
         let currentQuizList = [];
         let currentIndex = 0;
-        let isReviewMode = false;
 
         const subMap = {
             '물리': 'physics', '화학': 'chemistry', '생물': 'biology', '지구과학': 'earthScience',
             '정수': 'numberTheory', '해석': 'analysis', '기하': 'geometry', '조합': 'combinatorics'
         };
-        const mathSubs = ['정수', '해석', '기하', '조합'];
-        const scienceSubs = ['물리', '화학', '생물', '지구과학'];
 
-        // 데이터 로드
         async function loadData() {
             for(let kor in subMap) {
                 try {
                     const module = await import(`./${subMap[kor]}.js?v=${Date.now()}`);
                     const data = Object.values(module).find(Array.isArray);
                     if(data) allQuestions[kor] = data;
-                } catch(e) { console.error(`${kor} 데이터 로드 실패`); }
+                } catch(e) { console.error(kor + " 로드 실패"); }
             }
             renderStartPage();
         }
         loadData();
 
-        // [핵심] 통합 카운팅 로직 - 키워드 매칭 지원
-        function getUnifiedCount(solvedData, subList) {
+        // 통합 카운팅 (관리자/유저 공용)
+        function getUnifiedData(solvedData, subList) {
             let total = 0;
-            const dbKeys = Object.keys(solvedData || {});
-
-            subList.forEach(sub => {
-                const engKey = subMap[sub];
-                dbKeys.forEach(dbKey => {
-                    // 한글 포함(정수론에 '정수'가 포함됨) 또는 영어 키 일치
-                    if (dbKey.includes(sub) || dbKey === engKey) {
-                        const questions = solvedData[dbKey];
-                        Object.values(questions).forEach(v => {
-                            if (Number(v) >= 2) total++;
-                        });
+            const keys = Object.keys(solvedData || {});
+            subList.forEach(s => {
+                keys.forEach(k => {
+                    if(k.includes(s) || k === subMap[s]) {
+                        Object.values(solvedData[k]).forEach(v => { if(Number(v) >= 2) total++; });
                     }
                 });
             });
@@ -119,156 +98,173 @@
         }
 
         window.renderStartPage = () => {
-            appContainer.innerHTML = `<h1>TOP TIER</h1><p class="subtitle">영재학교 과학고 대비</p><button class="btn-main" onclick="renderAuth('login')">로그인</button><button class="btn-sub" onclick="renderAuth('signup')">회원가입</button>`;
+            appContainer.innerHTML = `<h1>TOP TIER</h1><p class="subtitle">영재학교 과학고 대비</p>
+            <button class="btn-main" onclick="renderAuth('login')">로그인</button>
+            <button class="btn-sub" onclick="renderAuth('signup')">회원가입</button>
+            <button class="btn-danger" style="margin-top:20px;" onclick="renderAuth('delete')">계정 삭제</button>`;
         };
 
         window.renderAuth = (mode) => {
-            appContainer.innerHTML = `<h1>${mode.toUpperCase()}</h1><input type="text" id="uid" placeholder="ID"><input type="password" id="upw" placeholder="PW"><button class="btn-main" onclick="handleAuth('${mode}')">입장</button><button class="btn-sub" onclick="renderStartPage()">뒤로</button>`;
+            const titles = { login: 'LOGIN', signup: 'SIGN UP', delete: 'DELETE' };
+            appContainer.innerHTML = `<h1>${titles[mode]}</h1>
+            <input type="text" id="uid" placeholder="아이디">
+            <input type="password" id="upw" placeholder="비밀번호">
+            <button class="btn-main" onclick="handleAuth('${mode}')">확인</button>
+            <button class="btn-sub" onclick="renderStartPage()">뒤로</button>`;
         };
 
         window.handleAuth = async (mode) => {
             const id = document.getElementById('uid').value.trim();
             const pw = document.getElementById('upw').value.trim();
-            if(!id || !pw) return;
+            if(!id || !pw) return alert("입력칸을 채워주세요.");
+
             const userRef = ref(db, `users/${id}`);
-            const snapshot = await get(userRef);
+            const snap = await get(userRef);
+
             if(mode === 'signup') {
-                if(snapshot.exists()) return alert("이미 있는 아이디입니다.");
+                if(snap.exists()) return alert("중복된 아이디입니다.");
                 await set(userRef, { password: pw, solved: {} });
-                alert("가입 완료!"); renderAuth('login');
-            } else {
-                if(!snapshot.exists() || snapshot.val().password !== pw) return alert("아이디/비번 오류");
+                alert("가입 성공!"); renderAuth('login');
+            } else if(mode === 'login') {
+                if(!snap.exists() || snap.val().password !== pw) return alert("정보가 틀립니다.");
                 currentUser = id; renderMainMenu();
+            } else if(mode === 'delete') {
+                if(!snap.exists() || snap.val().password !== pw) return alert("인증 실패.");
+                if(confirm("진짜 삭제하시겠습니까? 복구는 불가능합니다.")) {
+                    await remove(userRef); alert("삭제 완료."); renderStartPage();
+                }
             }
         };
 
         window.renderMainMenu = () => {
-            appContainer.innerHTML = `<h1>DASHBOARD</h1><p class="subtitle">${currentUser}님 반갑습니다</p><button class="btn-main" onclick="renderSubjectMenu()">🚀 퀴즈 시작</button><button class="btn-main" style="background:#f59e0b" onclick="startReview()">🔥 오답 복습</button><button class="btn-main" style="background:#8b5cf6" onclick="renderDogam()">📚 내 도감</button><button class="btn-main" style="background:#6366f1" onclick="renderRanking('all')">🏆 실시간 랭킹</button><button class="btn-sub" onclick="location.reload()">로그아웃</button>`;
+            // 관리자 여부 확인 (소문자 'admin' 기준)
+            const isAdmin = (currentUser.toLowerCase() === 'admin');
+            
+            appContainer.innerHTML = `<h1>DASHBOARD</h1><p class="subtitle"><b>${currentUser}</b>님 환영합니다</p>
+            <button class="btn-main" onclick="renderSubjectMenu()">🚀 퀴즈 시작</button>
+            <button class="btn-main" style="background:#f59e0b" onclick="renderTopWrong()">📊 오답 TOP 10</button>
+            <button class="btn-main" style="background:#8b5cf6" onclick="renderDogam()">📚 내 도감</button>
+            ${isAdmin ? `<button class="btn-admin" onclick="renderAdmin()">🛠 관리자 대시보드</button>` : ''}
+            <button class="btn-sub" onclick="location.reload()">로그아웃</button>`;
         };
 
         window.renderSubjectMenu = () => {
-            const allSubs = [...mathSubs, ...scienceSubs];
-            appContainer.innerHTML = `<h1>과목 선택</h1><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">${allSubs.map(s=>`<button onclick="startQuiz('${s}')" style="background:#334155; margin:0;">${s}</button>`).join('')}</div><button class="btn-sub" onclick="renderMainMenu()">뒤로가기</button>`;
+            appContainer.innerHTML = `<h1>과목 선택</h1><div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            ${Object.keys(subMap).map(s => `<button onclick="startQuiz('${s}')" style="background:#334155; margin:0;">${s}</button>`).join('')}
+            </div><button class="btn-sub" onclick="renderMainMenu()">뒤로</button>`;
         };
 
-        window.startQuiz = (subject) => {
-            isReviewMode = false;
-            currentQuizList = [...(allQuestions[subject] || [])].sort(()=>Math.random()-0.5);
-            if(currentQuizList.length === 0) return alert("데이터 로딩 중...");
+        window.startQuiz = async (subject) => {
+            const snap = await get(ref(db, `users/${currentUser}/solved`));
+            const solvedData = snap.val() || {};
+            let mastered = new Set();
+            Object.keys(solvedData).forEach(k => {
+                if(k.includes(subject) || k === subMap[subject]) {
+                    Object.keys(solvedData[k]).forEach(id => { if(Number(solvedData[k][id]) >= 2) mastered.add(Number(id)); });
+                }
+            });
+
+            // 1~300번 중 안 맞춘 문제만 랜덤 추출
+            currentQuizList = (allQuestions[subject] || [])
+                .filter(q => !mastered.has(Number(q.id)))
+                .sort(() => Math.random() - 0.5);
+
+            if(currentQuizList.length === 0) return alert("모든 문제를 맞췄습니다!");
             currentIndex = 0; renderQuestion();
         };
 
         window.renderQuestion = () => {
             const q = currentQuizList[currentIndex];
-            appContainer.innerHTML = `<div class="exit-link" onclick="renderMainMenu()">그만두기</div><p style="color:var(--primary); font-size:12px;">${q.category} Q${currentIndex+1}</p><h3>${q.question}</h3><div id="options">${q.options.map(opt=>`<button onclick="checkAnswer('${opt}')" style="background:rgba(255,255,255,0.06); margin:10px 0; text-align:left; padding-left:25px;">${opt}</button>`).join('')}</div>`;
+            appContainer.innerHTML = `<div class="exit-link" onclick="renderMainMenu()">그만하기</div>
+            <p style="color:var(--primary); font-size:12px;">${q.category} Q${q.id}</p>
+            <h3 style="margin:20px 0; line-height:1.5;">${q.question}</h3>
+            <div id="options-area"></div>`;
+            
+            const area = document.getElementById('options-area');
+            q.options.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = 'btn-sub';
+                b.style.textAlign = 'left';
+                b.style.marginBottom = '10px';
+                b.innerText = opt;
+                // 해석학 오류 방지를 위해 직접 함수 연결
+                b.addEventListener('click', () => checkAnswer(opt));
+                area.appendChild(b);
+            });
         };
 
-        window.checkAnswer = async (selected) => {
+        window.checkAnswer = async (sel) => {
             const q = currentQuizList[currentIndex];
-            const isCorrect = (selected === q.answer);
+            const isCorrect = (sel === q.answer);
             const userRef = ref(db, `users/${currentUser}/solved/${q.category}/${q.id}`);
-            const prev = await get(userRef);
-            const prevStatus = Number(prev.val() || 0);
+            const statRef = ref(db, `stats/wrongCount/${q.category}_${q.id}`);
 
-            let newStatus = prevStatus;
-            if(isCorrect) {
-                if(prevStatus < 2) newStatus = (prevStatus === 1 || isReviewMode) ? 2 : 3;
-            } else {
-                if(prevStatus < 2) newStatus = 1;
+            const snap = await get(userRef);
+            const prev = Number(snap.val() || 0);
+            let status = isCorrect ? (prev === 1 ? 2 : 3) : 1;
+            if(prev >= 2 && isCorrect) status = prev;
+            
+            await set(userRef, status);
+            if(!isCorrect) {
+                const sSnap = await get(statRef);
+                await set(statRef, (sSnap.val() || 0) + 1);
             }
-            await set(userRef, newStatus);
 
             document.getElementById('feedback-icon').innerText = isCorrect ? '✨' : '❌';
-            document.getElementById('feedback-text').innerText = isCorrect ? '정답입니다!' : `아쉽네요!\n정답: ${q.answer}`;
-            document.getElementById('next-btn').onclick = closeFeedback;
+            document.getElementById('feedback-text').innerText = isCorrect ? '정답입니다!' : `오답입니다.\n정답: ${q.answer}`;
+            document.getElementById('next-btn').onclick = () => {
+                document.getElementById('feedback-overlay').style.display = 'none';
+                currentIndex++;
+                if(currentIndex < currentQuizList.length) renderQuestion();
+                else renderMainMenu();
+            };
             document.getElementById('feedback-overlay').style.display = 'flex';
         };
 
-        window.closeFeedback = () => {
-            document.getElementById('feedback-overlay').style.display = 'none';
-            currentIndex++;
-            if(currentIndex < currentQuizList.length) renderQuestion();
-            else renderMainMenu();
+        window.renderTopWrong = async () => {
+            const snap = await get(ref(db, `stats/wrongCount`));
+            const data = snap.val() || {};
+            const sorted = Object.entries(data).sort((a,b) => b[1] - a[1]).slice(0, 10);
+            appContainer.innerHTML = `<h1>TOP 10 WRONG</h1><div class="admin-list">
+            ${sorted.map(([k,v]) => `<div class="admin-item"><b>${k}</b><br><span style="color:#ef4444">${v}회 틀림</span></div>`).join('')}
+            </div><button class="btn-sub" onclick="renderMainMenu()">뒤로</button>`;
         };
 
-        window.renderRanking = async (type) => {
-            const snapshot = await get(ref(db, `users`));
-            const users = snapshot.val() || {};
-            let rankData = [];
-            for (let id in users) {
-                const solved = users[id].solved || {};
-                let score = 0;
-                if(type === 'math') score = getUnifiedCount(solved, mathSubs);
-                else if(type === 'science') score = getUnifiedCount(solved, scienceSubs);
-                else score = getUnifiedCount(solved, [...mathSubs, ...scienceSubs]);
-                rankData.push({ id, score });
+        window.renderAdmin = async () => {
+            appContainer.innerHTML = `<h1>ADMIN</h1><div class="admin-list" id="admin-box">로딩...</div><button class="btn-sub" onclick="renderMainMenu()">뒤로</button>`;
+            const snap = await get(ref(db, `users`));
+            const users = snap.val() || {};
+            let html = "";
+            for(let id in users) {
+                const count = getUnifiedData(users[id].solved, Object.keys(subMap));
+                html += `<div class="admin-item"><b>ID: ${id}</b><br><small>총 정답수: ${count}</small></div>`;
             }
-            rankData.sort((a, b) => b.score - a.score);
-            appContainer.innerHTML = `<h1>🏆 RANKING</h1><div class="rank-tabs"><button class="${type==='all'?'active':''}" onclick="renderRanking('all')">전체</button><button class="${type==='math'?'active':''}" onclick="renderRanking('math')">수학</button><button class="${type==='science'?'active':''}" onclick="renderRanking('science')">과학</button></div><div class="rank-list">${rankData.map((u, i) => `<div class="rank-item"><b>${i+1}. ${u.id}</b><span>${u.score}개</span></div>`).join('')}</div><button class="btn-sub" onclick="renderMainMenu()">뒤로</button>`;
+            document.getElementById('admin-box').innerHTML = html;
         };
 
         window.renderDogam = async () => {
-            const snapshot = await get(ref(db, `users/${currentUser}/solved`));
-            const solvedData = snapshot.val() || {};
-            const allSubs = [...mathSubs, ...scienceSubs];
-            appContainer.innerHTML = `<h1>📚 DOGAM</h1><div class="dogam-list" style="max-height:400px; overflow-y:auto;">${allSubs.map(sub => {
-                const count = getUnifiedCount(solvedData, [sub]);
-                return `<div class="dogam-item" onclick="renderDogamDetail('${sub}')" style="display:flex; justify-content:space-between; padding:18px; border-bottom:1px solid rgba(255,255,255,0.05); cursor:pointer;"><b>${sub}</b><span>${count}/300 ❯</span></div>`;
+            const snap = await get(ref(db, `users/${currentUser}/solved`));
+            const solved = snap.val() || {};
+            appContainer.innerHTML = `<h1>📚 DOGAM</h1><div style="max-height:400px; overflow-y:auto;">
+            ${Object.keys(subMap).map(s => {
+                const count = getUnifiedData(solved, [s]);
+                return `<div onclick="renderDogamDetail('${s}')" style="display:flex; justify-content:space-between; padding:20px; border-bottom:1px solid rgba(255,255,255,0.1); cursor:pointer;">
+                <b>${s}</b><span>${count}/300 ❯</span></div>`;
             }).join('')}</div><button class="btn-sub" onclick="renderMainMenu()">뒤로</button>`;
         };
 
         window.renderDogamDetail = async (subject) => {
-            const snapshot = await get(ref(db, `users/${currentUser}/solved`));
-            const allSolved = snapshot.val() || {};
-            const engKey = subMap[subject];
-            
-            // 키워드 통합 데이터 추출
-            let combinedData = {};
-            Object.keys(allSolved).forEach(dbKey => {
-                if (dbKey.includes(subject) || dbKey === engKey) {
-                    combinedData = { ...combinedData, ...allSolved[dbKey] };
-                }
+            const snap = await get(ref(db, `users/${currentUser}/solved`));
+            const solved = snap.val() || {};
+            let combined = {};
+            Object.keys(solved).forEach(k => {
+                if(k.includes(subject) || k === subMap[subject]) combined = {...combined, ...solved[k]};
             });
-            
-            let gridHtml = "";
-            for(let i=1; i<=300; i++) {
-                const status = combinedData[i] || 0;
-                gridHtml += `<div class="q-block status-${status}" onclick="showDogamQuestion('${subject}', ${i}, ${status})">${i}</div>`;
-            }
-            appContainer.innerHTML = `<h2>${subject}</h2><div class="dogam-grid">${gridHtml}</div><button class="btn-sub" onclick="renderDogam()">뒤로</button>`;
+            let grid = "";
+            for(let i=1; i<=300; i++) grid += `<div class="q-block status-${combined[i]||0}">${i}</div>`;
+            appContainer.innerHTML = `<h2>${subject}</h2><div class="dogam-grid">${grid}</div><button class="btn-sub" onclick="renderDogam()">뒤로</button>`;
         };
 
-        window.showDogamQuestion = (subject, qId, status) => {
-            if(Number(status) === 0) return;
-            const q = (allQuestions[subject] || []).find(item => item.id == qId);
-            if(!q) return alert("문제를 찾을 수 없습니다.");
-
-            document.getElementById('feedback-icon').innerText = '🔍';
-            document.getElementById('feedback-text').innerText = `[${subject} ${qId}번]\n\nQ: ${q.question}\n\nA: ${q.answer}`;
-            document.getElementById('next-btn').onclick = () => document.getElementById('feedback-overlay').style.display = 'none';
-            document.getElementById('feedback-overlay').style.display = 'flex';
-        };
-
-        window.startReview = async () => {
-            isReviewMode = true;
-            const snapshot = await get(ref(db, `users/${currentUser}/solved`));
-            const solved = snapshot.val() || {};
-            let list = [];
-
-            for(let kor in allQuestions) {
-                const engKey = subMap[kor];
-                let combinedData = {};
-                Object.keys(solved).forEach(dbKey => {
-                    if (dbKey.includes(kor) || dbKey === engKey) {
-                        combinedData = { ...combinedData, ...solved[dbKey] };
-                    }
-                });
-                allQuestions[kor].forEach(q => { if(Number(combinedData[q.id]) === 1) list.push(q); });
-            }
-            if(list.length === 0) return alert("복습할 오답이 없습니다.");
-            currentQuizList = list.sort(()=>Math.random()-0.5);
-            currentIndex = 0; renderQuestion();
-        };
     </script>
 </body>
 </html>
